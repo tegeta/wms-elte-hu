@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  remote_user: ansible
+
+  tasks:
+    - include: tasks/docker.yaml
+    - include: tasks/containers.yaml

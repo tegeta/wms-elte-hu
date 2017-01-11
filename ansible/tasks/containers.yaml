@@ -1,0 +1,21 @@
+- name: Enable docker service
+  service: name=docker enabled=yes
+
+- name: Start docker service 
+  service: name=docker state=restarted
+
+- name: Install rsync on the host
+  apt:
+    name: rsync
+    state: present
+
+- name: Upload docker-related file
+  synchronize:
+    archive: no
+    recursive: yes
+    src: "../docker"
+    dest: "/tmp"
+
+- name: Start docker containers 
+  docker_service:
+    project_src: "/tmp/docker"

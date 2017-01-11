@@ -1,0 +1,66 @@
+version: '2'
+
+services:
+  web:
+    image: nginx:latest
+    logging:
+      driver: journald
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/nginx.conf:/etc/nginx/nginx.conf
+      - ./web/nginx.conf.d:/etc/nginx/nginx.conf.d
+      - /data/old/www:/var/www
+    networks:
+      - eltewms-network
+
+  php:
+    image: php:7-fpm
+    logging:
+      driver: journald
+    networks:
+      - eltewms-network
+
+  mapserver:
+    build: './mapserver'
+    logging:
+      driver: journald
+    volumes:
+      - /data/mapserver:/var/mapfiles
+    networks:
+      - eltewms-network
+
+  postgres:
+    build: './postgres'
+    logging:
+      driver: journald
+    ports:
+      - "5432:5432"
+    volumes:
+      - /data/pgdata:/var/lib/postgresql
+    networks:
+      - eltewms-network
+
+  osmupdate:
+    build: kartoza-docker-osm/docker-osmupdate
+    container_name: dockerosm_osmupdate
+    logging:
+      driver: journald
+    environment:
+      - MAX_DAYS=100 # Maximum az utolsó N frissítés letöltése
+      - DIFF=day
+      - MAX_MERGE=7
+      - COMPRESSION_LEVEL=1
+      - BASE_URL=http://download.geofabrik.de/europe/hungary-updates/ # Innen húzza le az OSM frissítéseket
+      - IMPORT_QUEUE=/osm/import_queue # Ezek a "volumes"-nál szereplő értékeknek feleljenek meg
+      - IMPORT_DONE=/osm/import_done
+      - SETTINGS=/osm/settings
+      - TIME=86400  # Naponta frissítsen
+    volumes:
+      - /data/osm/import_queue:/osm/import_queue
+      - /data/osm/import_done:/osm/import_done
+      - /data/osm/settings:/osm/settings
+
+networks:
+  eltewms-network:
+    driver: bridge
