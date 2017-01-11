@@ -1,0 +1,3 @@
+[submodule "docker/kartoza-docker-osm"]
+	path = docker/kartoza-docker-osm
+	url = https://github.com/kartoza/docker-osm.git
