@@ -4,5 +4,8 @@
   remote_user: ansible
 
   tasks:
-    - include: tasks/docker.yaml
-    - include: tasks/containers.yaml
+    - include: tasks/bootstrap.yaml   # Alapvető konfiguráció
+    - include: tasks/fs.yaml          # Fájlrendszer
+    - include: tasks/docker.yaml      # Docker telepítése
+    - include: tasks/containers.yaml  # Konténerek indítása
+    - include: tasks/database.yaml    # Adatbáziskonfiguráció
