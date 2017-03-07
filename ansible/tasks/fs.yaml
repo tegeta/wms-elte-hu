@@ -10,3 +10,11 @@
     - /data/osm/cache
     - /data/pgdata
     - /data/mapserver
+
+- name: pg_hba.conf másolása
+  copy:
+    src: "../docker/postgres/pg_hba.conf"
+    dest: "/data/pgdata/pg_hba.conf"
+    owner: 999
+    group: docker
+    mode: 0600
