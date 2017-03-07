@@ -5,7 +5,16 @@
 
   tasks:
     - include: tasks/bootstrap.yaml   # Alapvető konfiguráció
+      tags: bootstrap
+
     - include: tasks/fs.yaml          # Fájlrendszer
+      tags: fs
+
     - include: tasks/docker.yaml      # Docker telepítése
+      tags: docker
+
     - include: tasks/containers.yaml  # Konténerek indítása
+      tags: containers
+
     - include: tasks/database.yaml    # Adatbáziskonfiguráció
+      tags: db
