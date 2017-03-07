@@ -1,21 +1,31 @@
-- name: Enable docker service
+- name: docker szolgáltatás engedélyezése 
   service: name=docker enabled=yes
 
-- name: Start docker service 
+- name: docker szolgáltatás indítása
   service: name=docker state=restarted
 
-- name: Install rsync on the host
+- name: rsync telepítése
   apt:
     name: rsync
     state: present
 
-- name: Upload docker-related file
+- name: docker-related fájlok másolása a gazdagépre 
   synchronize:
     archive: no
     recursive: yes
     src: "../docker"
-    dest: "/tmp"
+    dest: "/"
 
-- name: Start docker containers 
-  docker_service:
-    project_src: "/tmp/docker"
+- name: docker-compose systemd szolgáltatás telepítése
+  copy:
+    src: "../docker/docker-compose.service"
+    dest: "/etc/systemd/system/docker-compose.service"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: docker-compose systemd szolgáltatás indítása
+  systemd:
+    name: docker-compose.service
+    state: started
+    enabled: True
