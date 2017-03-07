@@ -1,6 +1,5 @@
 ---
 - name: GIS adatbázis-felhasználó létrehozása
-  become_user: postgres
   postgresql_user:
     login_host: localhost
     login_user: postgres
