@@ -1,0 +1,12 @@
+---
+- name: /data könyvtárstruktúrájának létrehozása
+  file: "path={{ item }} state=directory mode=755"
+  with_items:
+    - /data
+    - /data/osm
+    - /data/osm/import_queue
+    - /data/osm/import_done
+    - /data/osm/settings
+    - /data/osm/cache
+    - /data/pgdata
+    - /data/mapserver
