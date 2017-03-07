@@ -30,13 +30,89 @@
     name: pgrouting
     state: present
 
-- name: Privilégiumok rendezése a GIS adatbázison
+- name: Privilégiumok visszavonása a GIS adatbázison minden felhasználó számára
   postgresql_privs:
     login_host: localhost
     login_user: postgres
 
-    database: gis
-    role: PUBLIC
     type: database
-    priv: all
+    database: gis
+
+    role: PUBLIC
+    privs: all
     state: absent
+
+- name: Privilégiumok visszavonása a GIS adatbázis sémáin minden felhasználó számára
+  postgresql_privs:
+    login_host: localhost
+    login_user: postgres
+
+    type: schema
+    database: gis
+    objs: public,topology
+
+    role: PUBLIC
+    privs: all
+    state: absent
+
+- name: Privilégiumok visszavonása a GIS adatbázis tábláin minden felhasználó számára
+  postgresql_privs:
+    login_host: localhost
+    login_user: postgres
+
+    type: table
+    database: gis
+    schema: public
+    objs: ALL_IN_SCHEMA
+
+    role: PUBLIC
+    privs: all
+    state: absent
+
+- name: gis_users csoport létrehozása
+  postgresql_user:
+    login_host: localhost
+    login_user: postgres
+
+    name: gis_users
+    role_attr_flags: NOLOGIN,NOSUPERUSER,INHERIT,NOCREATEDB,NOCREATEROLE,NOREPLICATION
+    state: present
+
+- name: Kapcsolódás engedélyezése a gis_users tagjainak a GIS adatbázisra
+  postgresql_privs:
+    login_host: localhost
+    login_user: postgres
+
+    type: database
+    database: gis
+
+    role: gis_users
+    privs: CONNECT
+    state: present
+
+- name: gis_users hozzáférési jogosultságainak beállítása a GIS adatbázis public sémáján 
+  postgresql_privs:
+    login_host: localhost
+    login_user: postgres
+
+    type: schema
+    database: gis
+    objs: public
+
+    role: gis_users
+    privs: USAGE
+    state: present
+
+- name: gis_users hozzáférési jogosultságainak beállítása a GIS adatbázis public sémájának tábláin 
+  postgresql_privs:
+    login_host: localhost
+    login_user: postgres
+
+    type: table
+    database: gis
+    schema: public
+    objs: ALL_IN_SCHEMA
+
+    role: gis_users
+    privs: SELECT
+    state: present
