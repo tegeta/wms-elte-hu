@@ -37,9 +37,18 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /data/pgdata:/var/lib/postgresql
+      - /data/pgdata:/var/lib/postgresql/data
     networks:
       - eltewms-network
+
+  phppgadmin:
+    image: jacksoncage/phppgadmin
+    logging:
+      driver: journald
+    networks:
+      - eltewms-network
+    environment:
+      - DB_HOST=postgres
 
   osmupdate:
     build: kartoza-docker-osm/docker-osmupdate
@@ -56,10 +65,56 @@ services:
       - IMPORT_DONE=/osm/import_done
       - SETTINGS=/osm/settings
       - TIME=86400  # Naponta frissítsen
+    networks:
+      - eltewms-network
     volumes:
       - /data/osm/import_queue:/osm/import_queue
       - /data/osm/import_done:/osm/import_done
       - /data/osm/settings:/osm/settings
+
+  imposm:
+    build: kartoza-docker-osm/docker-imposm3
+    container_name: dockerosm_imposm
+    logging:
+      driver: journald
+    environment:
+      - USER=docker
+      - PASSWORD=docker
+      - PORT=5432
+      - HOST=db
+      - DATABASE=gis
+      # seconds between 2 executions of the script
+      - TIME=86400
+      # folder for settings (with *.json and *.sql)
+      - SETTINGS=/osm/settings
+      # folder for caching
+      - CACHE=/osm/cache
+      # folder for diff which has been imported
+      - IMPORT_DONE=/osm/import_done
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=/osm/import_queue
+      # it can be 3857
+      - SRID=4326
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#optimize
+      - OPTIMIZE=true
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_PRODUCTION=public
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_IMPORT=import
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_BACKUP=backup
+      # Install some styles if you are using the default mapping. It can be 'yes' or 'no'
+      - QGIS_STYLE=yes
+      # Use clip in the database
+      - CLIP=no
+    networks:
+      - eltewms-network
+    volumes:
+      - /data/osm/import_queue:/osm/import_queue
+      - /data/osm/import_done:/osm/import_done
+      - /data/osm/settings:/osm/settings
+      - /data/osm/cache:/osm/cache
+
 
 networks:
   eltewms-network:
