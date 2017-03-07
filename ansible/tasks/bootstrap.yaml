@@ -1,0 +1,5 @@
+---
+- name: Helyi beállítások generálása
+  locale_gen:
+    name: hu_HU.UTF-8
+    state: present
