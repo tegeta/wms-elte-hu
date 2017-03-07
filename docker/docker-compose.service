@@ -1,0 +1,15 @@
+[Unit]
+Description=A wms.elte.hu docker szolgáltatásai
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+WorkingDirectory=/docker
+ExecStart=/usr/local/bin/docker-compose -f /docker/docker-compose.yml up
+ExecStop=/usr/local/bin/docker-compose -f /docker/docker-compose.yml stop
+
+[Install]
+WantedBy=local.target
