@@ -11,6 +11,14 @@
     - /data/pgdata
     - /data/mapserver
 
+- name: scripts könyvtár másolása
+  copy:
+    src: "../scripts"
+    dest: "/data/"
+    owner: root
+    group: root
+    mode: 0755
+
 - name: pg_hba.conf másolása
   copy:
     src: "../docker/postgres/pg_hba.conf"

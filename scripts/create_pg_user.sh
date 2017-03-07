@@ -1,24 +1,34 @@
 #!/bin/bash
 
 if [ $# -eq 0 ]; then
-  echo "Használat: $0 <PostgreSQL felhasználói név>"
+  read -p "Új felhasználó neve: " uname
+else
+  $uname=$1
 fi
 
-echo "[+] '$1' PostgreSQL-felhasználó létrehozása:"
+if [ "${uname}" == "" ]; then
+  echo "[-] Üres felhasználói név."
+  exit 1
+fi
 
-PG_HOST=localhost \
-PG_USER=postgres \
-  createuser \
-    --echo \
-    --encrypted \
-    --password \
-    --pwprompt \
-    $1
+echo "[+] '${uname}' PostgreSQL-felhasználó létrehozása:"
 
-echo "[+] '$1' hozzáadása a 'gis_users' csoporthoz"
+read -s -p "[?] Új felhasználó jelszava: " pass
+printf "\n"
+read -s -p "[?] Jelszó újból: " pass2
 
-PG_HOST=localhost \
-PG_USER=postgres \
-  psql -c 'GRANT gis_users TO $1;'
+if [ "${pass}" -ne "${pass2}" ]; then
+  echo "[-] A megadott jelszavak nem egyeznek."
+  exit 1
+fi
 
-echo "[+] A felhasználó sikeresen létrejött." 
+PGHOST=localhost \
+PGUSER=postgres \
+  psql -c "CREATE USER ${uname} IN ROLE gis_users ENCRYPTED PASSWORD '${pass}';"
+
+if [ $? -ne 0 ]; then
+  echo "[-] Hiba a felhasználó létrehozása során." 
+  exit 1
+else
+  echo "[+] Felhasználó létrehozva."
+fi
