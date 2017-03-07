@@ -35,6 +35,7 @@
   with_items:
     - python-dev
     - python-pip
+    - python-psycopg2 # Ezt pip helyett apt-ból, hogy felrakja a függőségeit is
 
 - name: Upgrade latest pip, setuptools, docker-py and docker-compose with pip
   pip:
@@ -43,6 +44,5 @@
   with_items:
     - name: pip
     - name: setuptools
-    - name: docker-py
-    - name: docker-compose
+    - name: docker-compose==1.9.0
   ignore_errors: yes
