@@ -27,5 +27,6 @@
 - name: docker-compose systemd szolgáltatás indítása
   systemd:
     name: docker-compose.service
-    state: started
-    enabled: True
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
