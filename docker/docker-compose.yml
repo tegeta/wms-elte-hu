@@ -42,13 +42,15 @@ services:
       - eltewms-network
 
   phppgadmin:
-    image: jacksoncage/phppgadmin
+    image: zhajor/docker-phppgadmin
     logging:
       driver: journald
-    networks:
-      - eltewms-network
+    ports:
+      - "8080:80"
     environment:
       - DB_HOST=postgres
+    networks:
+      - eltewms-network
 
   osmupdate:
     build: kartoza-docker-osm/docker-osmupdate
