@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]; then
   read -p "Új felhasználó neve: " uname
 else
-  $uname=$1
+  uname=$1
 fi
 
 if [ "${uname}" == "" ]; then
@@ -25,6 +25,11 @@ fi
 PGHOST=localhost \
 PGUSER=postgres \
   psql -c "CREATE USER ${uname} IN ROLE gis_users ENCRYPTED PASSWORD '${pass}';"
+
+PGHOST=localhost \
+PGUSER=postgres \
+  psql -d gis -c "CREATE SCHEMA ${uname} AUTHORIZATION ${uname};"
+
 
 if [ $? -ne 0 ]; then
   echo "[-] Hiba a felhasználó létrehozása során." 
