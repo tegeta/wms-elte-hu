@@ -15,9 +15,11 @@ services:
       - eltewms-network
 
   php:
-    image: php:7-fpm
+    build: './php'
     logging:
       driver: journald
+    volumes:
+      - /data/old/www:/var/www/html
     networks:
       - eltewms-network
 
@@ -41,6 +43,19 @@ services:
     networks:
       - eltewms-network
 
+  mysql:
+    image: vsamov/mysql-5.1.73
+    logging:
+      driver: journald
+    volumes:
+      - /data/old/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - eltewms-network
+
   phppgadmin:
     image: zhajor/docker-phppgadmin
     logging:
@@ -49,6 +64,7 @@ services:
       - "8080:80"
     environment:
       - DB_HOST=postgres
+      - DB_PORT=5432
     networks:
       - eltewms-network
 
